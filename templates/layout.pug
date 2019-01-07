@@ -1,0 +1,23 @@
+doctype html
+
+html
+
+  head
+    style
+      include ../static/css/main.css
+    title #{title} | TODO App
+
+  body
+    nav
+      ul
+        li
+          a(href='/') TODO App
+        div(class='right')
+          li
+            a(href='/' class=(title === "Home" ? "active" : undefined)) Todo
+          li
+            a(href='/completed' class=(title === "Completed" ? "active" : undefined)) Completed
+          li
+            a(href='/add' class=(title === "Add" ? "active" : undefined)) Add +
+    main
+      block content
