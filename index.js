@@ -26,4 +26,4 @@ app.get('/add', (req, res) => {
     }))
 })
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Todo app listening on port ${port}!`))
