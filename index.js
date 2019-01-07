@@ -3,6 +3,8 @@ const template = require('./template')
 const app = express()
 const port = 3000
 
+app.use('/static', express.static('static'))
+
 app.get('/', (req, res) => {
     res.send(template.todo({
         title: 'Home',
