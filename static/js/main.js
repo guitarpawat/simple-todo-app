@@ -22,9 +22,11 @@ var todoModel = (function() {
     }
 
     return {
+        /* For testing purpose only
         getTodos: function() {
             return todos
         },
+        */
 
         getNotCompleted: function() {
             return getTodo(false)
