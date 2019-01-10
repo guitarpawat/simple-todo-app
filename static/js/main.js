@@ -61,8 +61,17 @@ var todoModel = (function() {
 
 var todoView = (function() {
 
-    var DOM_ID = {
-        content: 'content'
+    var DOM = {
+        selector: {
+            nearestData: 'p',
+            nearestDelete: 'a'
+        },
+        id: {
+            content: 'content'
+        },
+        data: {
+            id: 'data-id'
+        }
     }
 
     var dateStr = function(date) {
@@ -71,14 +80,20 @@ var todoView = (function() {
 
     return {
         addTodo: function(todo) {
-            var insertStr = `<p><b>${todo.header}</b>&emsp;${todo.msg}&emsp;<i>Due by ${dateStr(todo.dueDate)}</i></p>`
-            document.getElementById(DOM_ID.content).insertAdjacentHTML('afterbegin', insertStr)
+            var insertStr = `<${DOM.selector.nearestData} ${DOM.data.id}="${todo.id}"><b>${todo.header}</b>&emsp;${todo.msg}&emsp;<i>Created: ${dateStr(todo.createDate)} Due: ${dateStr(todo.dueDate)}</i>&emsp;<${DOM.selector.nearestDelete} href="#">[delete]</${DOM.selector.nearestDelete}></${DOM.selector.nearestData}>`
+            document.getElementById(DOM.id.content).insertAdjacentHTML('afterbegin', insertStr)
+        },
+
+        getDom: function() {
+            return DOM
         },
     }
 
 })()
 
 var todoController = (function(model, view) {
+
+    var DOM = view.getDom()
 
     var parseDate = function(dateStr) {
         var dateArr = dateStr.split(/(?:\/|-|\s)/)
@@ -87,15 +102,31 @@ var todoController = (function(model, view) {
         var year = dateArr[2]
         var d = new Date()
         d.setFullYear(year, month-1, date)
-        console.log(dateStr, dateArr, d)
         return d
+    }
+
+    var addViewEvent = function() {
+        document.getElementById(DOM.id.content).addEventListener('click', (e) => {
+            if(e.target.tagName.toUpperCase() === DOM.selector.nearestDelete.toUpperCase()) {
+            var closest = e.target.closest(DOM.selector.nearestData)
+            var id = closest.getAttribute(DOM.data.id)
+                model.deleteTodo(id)
+                closest.parentNode.removeChild(closest)
+            }
+        })
     }
 
     return {
         makeTodo: function(header, msg, dueDate) {
             var todo = model.putTodo(header, msg, new Date(), parseDate(dueDate))
             view.addTodo(todo)
+        },
+
+        init: function() {
+            addViewEvent()
         }
     }
 
 })(todoModel, todoView)
+
+todoController.init()
