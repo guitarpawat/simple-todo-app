@@ -1,7 +1,7 @@
 const path = require('path')
 const pug = require('pug')
 
-const files = ['add', 'completed', 'todo']
+const files = ['add', 'todo']
 const templateDir = path.join(__dirname, 'templates')
 
 const compiled = {}

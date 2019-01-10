@@ -8,21 +8,23 @@ app.use('/static', express.static('static'))
 app.get('/', (req, res) => {
     res.send(template.todo({
         title: 'Home',
-        text: 'Hello world'
+        text: 'Hello world',
+        complete: false,
     }))
 })
 
 app.get('/completed', (req, res) => {
-    res.send(template.completed({
+    res.send(template.todo({
         title: 'Completed',
-        text: 'This is complete page'
+        text: 'This is complete page',
+        complete: true,
     }))
 })
 
 app.get('/add', (req, res) => {
     res.send(template.add({
         title: 'Add',
-        text: 'This is add page'
+        text: 'This is add page',
     }))
 })
 

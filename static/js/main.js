@@ -43,7 +43,9 @@ var todoModel = (function() {
             } else {
                 id = todos[todos.length - 1].id + 1
             }
-            todos.push(new Todo(id, header, msg, createDate, dueDate))
+            var todo = new Todo(id, header, msg, createDate, dueDate)
+            todos.push(todo)
+            return todo
         },
 
         deleteTodo(id) {
@@ -59,8 +61,41 @@ var todoModel = (function() {
 
 var todoView = (function() {
 
+    var DOM_ID = {
+        content: 'content'
+    }
+
+    var dateStr = function(date) {
+        return `${date.getDay()}/${date.getMonth() + 1}/${date.getFullYear()}`
+    }
+
+    return {
+        addTodo: function(todo) {
+            var insertStr = `<p><b>${todo.header}</b>&emsp;${todo.msg}&emsp;<i>Due by ${dateStr(todo.dueDate)}</i></p>`
+            document.getElementById(DOM_ID.content).insertAdjacentHTML('afterbegin', insertStr)
+        },
+    }
+
 })()
 
-var todoController = (function() {
+var todoController = (function(model, view) {
 
-})()
+    var parseDate = function(dateStr) {
+        var dateArr = dateStr.split(/(?:\/|-|\s)/)
+        var date = dateArr[0]
+        var month = dateArr[1]
+        var year = dateArr[2]
+        var d = new Date()
+        d.setFullYear(year, month-1, date)
+        console.log(dateStr, dateArr, d)
+        return d
+    }
+
+    return {
+        makeTodo: function(header, msg, dueDate) {
+            var todo = model.putTodo(header, msg, new Date(), parseDate(dueDate))
+            view.addTodo(todo)
+        }
+    }
+
+})(todoModel, todoView)
