@@ -1,4 +1,11 @@
 extends layout
 
 block content
-    p #{text}
+    form(action="#")
+        p Name:&emsp;
+            input#name(type="text")
+        p Message:&emsp;
+            textarea#msg
+        p Due Date:&emsp;
+            input#date(type="text" placeholder="dd/mm/yyyy")
+        input#addTodo(type="submit" value="Add Todo")

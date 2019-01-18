@@ -24,7 +24,6 @@ app.get('/completed', (req, res) => {
 app.get('/add', (req, res) => {
     res.send(template.add({
         title: 'Add',
-        text: 'This is add page',
     }))
 })
 
