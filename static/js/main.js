@@ -27,10 +27,9 @@ var todoModel = (function() {
 
     return {
         //For testing purpose only
-        getTodos: function() {
-            return todos
-        },
-
+        // getTodos: function() {
+        //     return todos
+        // },
 
         getNotCompleted: function() {
             return getTodo(false)
@@ -53,13 +52,17 @@ var todoModel = (function() {
             return todo
         },
 
-        deleteTodo(id) {
+        deleteTodo: function(id) {
             var index = todos.findIndex(function(todo) {
                 return todo.id === id
             })
 
             return todos.splice(index, 1)
         },
+
+        loadTodos: function(todo) {
+            if(todo) todos = todo
+        }
     }
 
 })()
@@ -84,7 +87,7 @@ var todoView = (function() {
     }
 
     function dateStr(date) {
-        return `${date.getDay()}/${date.getMonth() + 1}/${date.getFullYear()}`
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
     }
 
     function clear() {
@@ -104,8 +107,10 @@ var todoView = (function() {
 
         update: function(todos) {
             clear()
-            var _this = this
-            todos.forEach(function(e) {_this.addTodo(e)})
+            if(todos) {
+                var _this = this
+                todos.forEach(function(e) {_this.addTodo(e)})
+            }
         },
     }
 
@@ -114,6 +119,9 @@ var todoView = (function() {
 var todoController = (function(model, view) {
 
     var DOM = view.getDom()
+    var local = {
+        todos: 'todos'
+    }
 
     function parseDate(dateStr) {
         var dateArr = dateStr.split(/(?:\/|-|\s)/)
@@ -122,33 +130,60 @@ var todoController = (function(model, view) {
         var year = dateArr[2]
         var d = new Date()
         d.setFullYear(year, month-1, date)
+        d.setHours(0, 0, 0, 0)
         return d
     }
 
-    function updateView() {
+    function update() {
         var todos = model.getNotCompleted()
+        save(todos)
         view.update(todos)
     }
 
-    function addViewEvent() {
-        document.getElementById(DOM.id.content).addEventListener('click', (e) => {
+    function load() {
+        var todos = JSON.parse(localStorage.getItem(local.todos))
+        todos = todos? todos : []
+        todos.forEach(function(e) {
+            e.createDate = new Date(e.createDate)
+            e.dueDate = new Date(e.dueDate)
+        })
+        return todos
+    }
+
+    function save(todos) {
+        if(todos) {
+            localStorage.removeItem(local.todos)
+            localStorage.setItem(local.todos, JSON.stringify(todos))
+        }
+    }
+
+    function addTodoViewEvent() {
+        document.getElementById(DOM.id.content).addEventListener('click', function(e) {
             if(e.target.tagName.toUpperCase() === DOM.selector.nearestDelete.toUpperCase()) {
                 var closest = e.target.closest(DOM.selector.nearestData)
                 var id = closest.getAttribute(DOM.data.id)
                 model.deleteTodo(id)
-                updateView()
+                update()
             }
         })
+    }
+
+    function isTodoPage() {
+        return !!document.getElementById(DOM.id.content)
     }
 
     return {
         makeTodo: function(header, msg, dueDate) {
             model.putTodo(header, msg, new Date(), parseDate(dueDate))
-            updateView()
+            update()
         },
 
         init: function() {
-            addViewEvent()
+            if(isTodoPage()) {
+                addTodoViewEvent()
+                model.loadTodos(load())
+                update()
+            }
         }
     }
 
