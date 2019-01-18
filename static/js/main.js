@@ -123,14 +123,13 @@ var todoController = (function(model, view) {
         todos: 'todos'
     }
 
-    function parseDate(dateStr) {
+    function parseDate(dateStr, isDue = false) {
         var dateArr = dateStr.split(/(?:\/|-|\s)/)
         var date = dateArr[0]
         var month = dateArr[1]
         var year = dateArr[2]
         var d = new Date()
-        d.setFullYear(year, month-1, date)
-        d.setHours(0, 0, 0, 0)
+        d.setHours(23, 59, 59, 999)
         return d
     }
 
