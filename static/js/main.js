@@ -2,6 +2,8 @@ var todoModel = (function() {
 
     var todos = []
 
+    var maxId = 0
+
     var Todo = function(id, header, msg, createDate, dueDate) {
         this.id = id
         this.header = header
@@ -25,6 +27,12 @@ var todoModel = (function() {
         return new Date(b.dueDate) - new Date(a.dueDate)
     }
 
+    function findMaxId() {
+        todos.forEach(function(e) {
+            maxId = Math.max(maxId, e.id)
+        })
+    }
+
     return {
         //For testing purpose only
         // getTodos: function() {
@@ -40,13 +48,8 @@ var todoModel = (function() {
         },
 
         putTodo: function(header, msg, createDate, dueDate) {
-            var id
-            if(todos.length === 0) {
-                id = 1
-            } else {
-                id = todos[todos.length - 1].id + 1
-            }
-            var todo = new Todo(id, header, msg, createDate, dueDate)
+            maxId++
+            var todo = new Todo(maxId, header, msg, createDate, dueDate)
             todos.push(todo)
             todos.sort(sortTodos)
             return todo
@@ -61,7 +64,11 @@ var todoModel = (function() {
         },
 
         loadTodos: function(todo) {
-            if(todo) todos = todo
+            if(todo) {
+                todos = todo
+                findMaxId()
+            }
+
         }
     }
 
@@ -79,7 +86,8 @@ var todoView = (function() {
             content: 'content'
         },
         data: {
-            id: 'data-id'
+            id: 'data-id',
+            type: 'data-type'
         },
         classes: {
             todo: 'todo'
@@ -123,13 +131,14 @@ var todoController = (function(model, view) {
         todos: 'todos'
     }
 
-    function parseDate(dateStr, isDue = false) {
+    function parseDate(dateStr) {
         var dateArr = dateStr.split(/(?:\/|-|\s)/)
         var date = dateArr[0]
         var month = dateArr[1]
         var year = dateArr[2]
         var d = new Date()
         d.setHours(23, 59, 59, 999)
+        d.setFullYear(year, month-1, date)
         return d
     }
 
@@ -161,7 +170,7 @@ var todoController = (function(model, view) {
             if(e.target.tagName.toUpperCase() === DOM.selector.nearestDelete.toUpperCase()) {
                 var closest = e.target.closest(DOM.selector.nearestData)
                 var id = closest.getAttribute(DOM.data.id)
-                model.deleteTodo(id)
+                model.deleteTodo(parseInt(id))
                 update()
             }
         })

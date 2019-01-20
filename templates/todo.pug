@@ -1,4 +1,4 @@
 extends layout
 
 block content
-    div#content
+    div#content(data-type=(title === "Completed" ? "completed" : "todo"))
