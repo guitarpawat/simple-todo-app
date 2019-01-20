@@ -47,6 +47,10 @@ var todoModel = (function() {
             return getTodo(true)
         },
 
+        getTodos: function() {
+            return todos
+        },
+
         putTodo: function(header, msg, createDate, dueDate) {
             maxId++
             var todo = new Todo(maxId, header, msg, createDate, dueDate)
@@ -143,9 +147,11 @@ var todoController = (function(model, view) {
     }
 
     function update() {
-        var todos = model.getNotCompleted()
-        save(todos)
+        var type = document.getElementById(DOM.id.content).getAttribute(DOM.data.type)
+        todos = type === 'todo'? model.getNotCompleted() : model.getCompleted()
         view.update(todos)
+
+        save(model.getTodos())
     }
 
     function load() {
