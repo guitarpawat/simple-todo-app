@@ -83,7 +83,8 @@ var todoView = (function() {
     var DOM = {
         selector: {
             nearestData: 'p',
-            nearestDelete: 'a',
+            nearestDelete: '.delete',
+            nearestComplete: '.complete',
             todo: '.todo'
         },
         id: {
@@ -94,7 +95,9 @@ var todoView = (function() {
             type: 'data-type'
         },
         classes: {
-            todo: 'todo'
+            todo: 'todo',
+            nearestDelete: 'delete',
+            nearestComplete: 'complete',
         }
     }
 
@@ -109,7 +112,7 @@ var todoView = (function() {
 
     return {
         addTodo: function(todo) {
-            var insertStr = `<${DOM.selector.nearestData} class="${DOM.classes.todo}" ${DOM.data.id}="${todo.id}"><b>${todo.header}</b>&emsp;${todo.msg}&emsp;<i>Created: ${dateStr(todo.createDate)} Due: ${dateStr(todo.dueDate)}</i>&emsp;<${DOM.selector.nearestDelete} href="#">[delete]</${DOM.selector.nearestDelete}></${DOM.selector.nearestData}>`
+            var insertStr = `<${DOM.selector.nearestData} class="${DOM.classes.todo}" ${DOM.data.id}="${todo.id}"><b>${todo.header}</b>&emsp;${todo.msg}&emsp;<i>Created: ${dateStr(todo.createDate)} Due: ${dateStr(todo.dueDate)}</i>&emsp;<a href="#" class="${DOM.classes.nearestComplete}">[complete]</a>&emsp;<a href="#" class="${DOM.classes.nearestDelete}">[delete]</a></${DOM.selector.nearestData}>`
             document.getElementById(DOM.id.content).insertAdjacentHTML('afterbegin', insertStr)
         },
 
@@ -173,7 +176,7 @@ var todoController = (function(model, view) {
 
     function addTodoViewEvent() {
         document.getElementById(DOM.id.content).addEventListener('click', function(e) {
-            if(e.target.tagName.toUpperCase() === DOM.selector.nearestDelete.toUpperCase()) {
+            if(e.target.className.toUpperCase() === DOM.classes.nearestDelete.toUpperCase()) {
                 var closest = e.target.closest(DOM.selector.nearestData)
                 var id = closest.getAttribute(DOM.data.id)
                 model.deleteTodo(parseInt(id))
